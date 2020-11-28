@@ -14,7 +14,8 @@ uses
   View.Usuario in 'src\View.Usuario.pas' {frmView_Usuario},
   View.Login in 'src\View.Login.pas' {frmLogin_View},
   Controller.Cadastros in 'src\Controller.Cadastros.pas',
-  Model.DMConnZeos in 'src\Model.DMConnZeos.pas' {DMConnZeos: TDataModule};
+  Model.DMConnZeos in 'src\Model.DMConnZeos.pas' {DMConnZeos: TDataModule},
+  View.BaseGrid in 'src\View.BaseGrid.pas' {frmBaseGrid};
 
 {$R *.res}
 

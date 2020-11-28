@@ -20,7 +20,7 @@ type
     function USUARIOS : iUsuario_Model;
     function LOGIN : iLogin_Controller;
     function Cadastros: iControllerCadastros;
-    function Relatorios: iControllerRelatorios;
+    //function Relatorios: iControllerRelatorios;
   end;
 
   iUsuario_Controller = interface
