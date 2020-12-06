@@ -17,9 +17,4 @@ object DMConnZeos: TDMConnZeos
     Left = 184
     Top = 56
   end
-  object ZQuery1: TZQuery
-    Params = <>
-    Left = 248
-    Top = 168
-  end
 end

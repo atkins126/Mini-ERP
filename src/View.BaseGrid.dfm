@@ -7,7 +7,7 @@ object frmBaseGrid: TfrmBaseGrid
   Font.Charset = ANSI_CHARSET
   Font.Color = clWindowText
   Font.Height = -11
-  Font.Name = 'Tahoma'
+  Font.Name = 'Segoe UI'
   Font.Style = []
   OldCreateOrder = False
   OnShow = FormShow
@@ -637,14 +637,23 @@ object frmBaseGrid: TfrmBaseGrid
           Height = 365
           Align = alClient
           DataSource = DataSource1
-          FixedColor = clWhite
-          Options = [dgEditing, dgTitles, dgIndicator, dgColumnResize, dgTabs, dgConfirmDelete, dgCancelOnExit]
+          FixedColor = clMoneyGreen
+          Font.Charset = ANSI_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -11
+          Font.Name = 'Tahoma'
+          Font.Style = []
+          Options = [dgTitles, dgIndicator, dgColumnResize, dgTabs, dgConfirmDelete, dgCancelOnExit]
+          ParentFont = False
+          ReadOnly = True
           TabOrder = 0
           TitleFont.Charset = ANSI_CHARSET
-          TitleFont.Color = clWindowText
+          TitleFont.Color = cl3DDkShadow
           TitleFont.Height = -11
           TitleFont.Name = 'Tahoma'
           TitleFont.Style = []
+          OnDrawColumnCell = JvDBGrid1DrawColumnCell
+          AlternateRowColor = 16053503
           SelectColumnsDialogStrings.Caption = 'Select columns'
           SelectColumnsDialogStrings.OK = '&OK'
           SelectColumnsDialogStrings.NoSelectionWarning = 'At least one column must be visible!'
@@ -1656,6 +1665,7 @@ object frmBaseGrid: TfrmBaseGrid
     end
   end
   object DataSource1: TDataSource
+    OnStateChange = DataSource1StateChange
     Left = 688
     Top = 17
   end

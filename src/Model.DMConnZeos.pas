@@ -20,7 +20,6 @@ type
   TDMConnZeos = class(TDataModule, iModelConn)
     ZConnection1: TZConnection;
     ZSQLMonitor1: TZSQLMonitor;
-    ZQuery1: TZQuery;
     procedure DataModuleCreate(Sender: TObject);
   private
     { Private declarations }
@@ -34,6 +33,7 @@ type
   private
   	ZConnection1: TZConnection;
     ZQuery1: TZQuery;
+    FParams : TParams;
   public
     constructor Create;
     destructor Destroy; override;
@@ -84,12 +84,20 @@ end;
 destructor TModelConnZeosQuery.Destroy;
 begin
 	FreeAndNil(ZQuery1);
+  if Assigned(FParams) then
+    FreeAndNil(FParams);
   inherited;
 end;
 
 procedure TModelConnZeosQuery.ExecSQL;
 begin
-	ZQuery1.ExecSQL;
+//	ZQuery1.Close;
+  ZQuery1.Params.Assign(FParams);
+  ZQuery1.Prepare;
+  ZQuery1.ExecSQL;
+
+  if Assigned(FParams) then
+    FreeAndNil(FParams);
 end;
 
 procedure TModelConnZeosQuery.Open(aSQL: String);
@@ -112,12 +120,26 @@ end;
 
 procedure TModelConnZeosQuery.Open;
 begin
-	ZQuery1.Open;
+  ZQuery1.Close;
+
+  if Assigned(FParams) then
+    ZQuery1.Params.Assign(FParams);
+
+  ZQuery1.Prepare;
+  ZQuery1.Open;
+
+  if Assigned(FParams) then
+    FreeAndNil(FParams);
 end;
 
 function TModelConnZeosQuery.Params: TParams;
 begin
-	Result := ZQuery1.Params;
+	if not Assigned(FParams) then
+  begin
+    FParams := TParams.Create(nil);
+    FParams.Assign(ZQuery1.Params);
+  end;
+  Result := FParams;
 end;
 
 function TModelConnZeosQuery.SQL: TStrings;

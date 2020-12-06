@@ -18,6 +18,7 @@ type
     FConn: iModelQuery;
     FDataSource : TDataSource;
     FList : TList;
+    procedure DataSource1DataChange(Sender: TObject; Field: TField);
   public
     constructor Create;
     destructor Destroy; override;
@@ -53,6 +54,7 @@ begin
 	Result := Self;
 	FDataSource := ADataSource;
   FDataSource.DataSet := FConn.DataSet;
+  FDataSource.OnDataChange := DataSource1DataChange;
 end;
 
 function TUsuarioDAO_Model.Delete(AId: string): iDAO_Model;
@@ -61,9 +63,25 @@ begin
   if (Trim(AId) = '') then
   	raise	Exception.Create('Id da tabela não informado');
 
-  FConn.SQL.Add('delete from USUARIOS where COD_USR = :CODIGO');
+  FConn.SQL.Clear;
+  FConn.SQL.Add('delete from USUARIO where CODIGO = :CODIGO');
   FConn.Params.ParamByName('CODIGO').Value := AId;
   FConn.ExecSQL;
+end;
+
+procedure TUsuarioDAO_Model.DataSource1DataChange(Sender: TObject;
+  Field: TField);
+begin
+  if (not FConn.DataSet.IsEmpty) then
+  begin
+    FThis.CODIGO := FConn.DataSet.FieldByName('CODIGO').Value;
+    FThis.NOME := FConn.DataSet.FieldByName('NOME').Value;
+    FThis.LOGIN := FConn.DataSet.FieldByName('LOGIN').Value;
+    FThis.SENHA := FConn.DataSet.FieldByName('SENHA').Value;
+    FThis.STATUS := FConn.DataSet.FieldByName('STATUS').Value;
+    FThis.EMAIL := FConn.DataSet.FieldByName('EMAIL').Value;
+    FThis.DATA_NASCIMENTO := FConn.DataSet.FieldByName('DATA_NASCIMENTO').Value;
+  end;
 end;
 
 function TUsuarioDAO_Model.Delete(AId: integer): iDAO_Model;
@@ -131,23 +149,20 @@ function TUsuarioDAO_Model.Insert: iDAO_Model;
 begin
 	Result := Self;
 
-  if (Trim(FThis.CODIGO) = '') then
-  	raise Exception.Create('Código do usuário não informado');
-
-  if (FThis.DATA_NASCIMENTO <= StrToDate('01/01/1128')) then
+  if (FNewThis.DATA_NASCIMENTO <= StrToDate('01/01/1128')) then
   	raise Exception.Create('Data informada inválida');
 
   FConn.SQL.Clear;
-  FConn.SQL.Text := 'insert into USUARIOS'+
+  FConn.SQL.Add('insert into USUARIO '+
     '(CODIGO, NOME, LOGIN, SENHA, STATUS, EMAIL, DATA_NASCIMENTO) values ('+
-    ':CODIGO, :NOME, :LOGIN, :SENHA, :STATUS, :EMAIL, :DATA_NASCIMENTO)';
-  FConn.Params.ParamByName('CODIGO').Value          := FThis.CODIGO;
-  FConn.Params.ParamByName('NOME').Value            := FThis.NOME;
-  FConn.Params.ParamByName('LOGIN').Value           := FThis.LOGIN;
-  FConn.Params.ParamByName('SENHA').Value           := FThis.SENHA;
-  FConn.Params.ParamByName('STATUS').Value          := FThis.STATUS;
-  FConn.Params.ParamByName('EMAIL').Value           := FThis.EMAIL;
-  FConn.Params.ParamByName('DATA_NASCIMENTO').Value := FThis.DATA_NASCIMENTO;
+    'NULL, :NOME, :LOGIN, :SENHA, :STATUS, :EMAIL, :DATA_NASCIMENTO)');
+  //FConn.Params.ParamByName('CODIGO').Value          := FNewThis.CODIGO;
+  FConn.Params.ParamByName('NOME').Value            := FNewThis.NOME;
+  FConn.Params.ParamByName('LOGIN').Value           := FNewThis.LOGIN;
+  FConn.Params.ParamByName('SENHA').Value           := FNewThis.SENHA;
+  FConn.Params.ParamByName('STATUS').Value          := FNewThis.STATUS;
+  FConn.Params.ParamByName('EMAIL').Value           := FNewThis.EMAIL;
+  FConn.Params.ParamByName('DATA_NASCIMENTO').Value := FNewThis.DATA_NASCIMENTO;
   FConn.ExecSQL;
 end;
 
@@ -160,13 +175,13 @@ function TUsuarioDAO_Model.Update: iDAO_Model;
 begin
 	Result := Self;
   FConn.SQL.Clear;
-  FConn.SQL.Text := 'update USUARIOS set '+
-    '(NOME = :NOME, '+
+  FConn.SQL.Text := 'update USUARIO set '+
+    'NOME = :NOME, '+
     'LOGIN = :LOGIN, '+
     'SENHA = :SENHA, '+
     'STATUS = :STATUS, '+
     'EMAIL = :EMAIL, '+
-    'DATA_NASCIMENTO = :DATA_NASCIMENTO) '+
+    'DATA_NASCIMENTO = :DATA_NASCIMENTO '+
     'where CODIGO = :CODIGO';
 
   FConn.Params.ParamByName('CODIGO').Value          := FThis.CODIGO;
